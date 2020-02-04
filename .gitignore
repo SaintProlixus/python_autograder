@@ -1,6 +1,6 @@
-submissions/*
+submissions/*/
 venv/
-results/*
+results/*/
 configs/*
 
 \.mypy_cache/
