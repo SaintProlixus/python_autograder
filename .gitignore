@@ -1,0 +1,57 @@
+submissions/*
+venv/
+results/*
+configs/*
+
+\.mypy_cache/
+\.vscode/
+mprofile*
+
+sky*/
+aes\.min\.js
+atn_init_gate\.html
+fiddlerATNcapture\.saz
+geckodriver\.log
+local*\.yml
+error*
+local_*
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+
+# C extensions
+*.so
+
+# Distribution / packaging
+bin/
+build/
+develop-eggs/
+dist/
+eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Installer logs
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Unit test / coverage reports
+.tox/
+.coverage
+.cache
+nosetests.xml
+coverage.xml
+
+# Translations
+*.mo
+
+# PyCharm
+.idea
+.idea/*
