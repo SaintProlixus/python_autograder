@@ -18,27 +18,37 @@ func_table = {  # Change values below as needed
         "range": (-1000, 1000),  # Range of randomized parameter (range for numbers/length of str)
         "acc_type": (float, int)  # What return types are accepted by the function
         },
-    "function_name2": {
-        "call": solutions.function_name2,
-        "range": (0, 1000),
-        "pars": (int, float),
-        "acc_type": (float,)
+    "listSample": {
+        "call": solutions.listSample,
+        "range": (1, 5),  # Here, the range specifies number of items in the list
+        "pars": ([int, 2, 5], float),  # Inside the list/tuple setup is [type, min_val, max_val]
+        "acc_type": (list,)
         },
 }
 
 
-def generate_tests(funcs, num):  # Do not alter this function
+def generate_tests(funcs, num):  # Do not alter this function!!!
     test_battery = dict()
     for func in funcs.keys():
         test_battery[func] = dict()
         test_battery[func]["tests"] = dict()
         for i in range(num):
             test_name = f"test{i}"
-            params = test_helper.test_params(funcs[func]["pars"], *funcs[func]["range"])
-            expected = funcs[func]["call"](*params)
+            init_params = test_helper.test_params(funcs[func]["pars"], *funcs[func]["range"])
+            params = list()
+            for e in init_params:
+                if type(e) == list:
+                    params.append(e[:])
+                else:
+                    params.append(e)
+            params = tuple(params)
+            try:
+                expected = funcs[func]["call"](*params)
+            except Exception as e:
+                expected = e
             acc_type = funcs[func]["acc_type"]
-            test_battery[func]["tests"][test_name] = {"params": params, "expected": expected, "acc_type": acc_type}
+            test_battery[func]["tests"][test_name] = {"params": init_params, "expected": expected, "acc_type": acc_type}
     return test_battery
 
 
-funcs = generate_tests(func_table, 1000)  # The number in this parameter set can be altered to adjust number of tests
+funcs = generate_tests(func_table, 10000)  # The number in this parameter set can be altered to adjust number of tests
