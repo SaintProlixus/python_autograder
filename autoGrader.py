@@ -4,6 +4,19 @@ import math
 import pandas as pd
 import argparse
 import test_helper
+from contextlib import contextmanager
+import sys, os
+
+
+@contextmanager
+def suppress_stdout():
+    with open(os.devnull, "w") as devnull:
+        old_stdout = sys.stdout
+        sys.stdout = devnull
+        try:
+            yield
+        finally:
+            sys.stdout = old_stdout
 
 
 def get_func(func: str):
@@ -46,11 +59,13 @@ if __name__ == "__main__":
     df = construct_df(funcs)
     for i in range(len(pathlist)):
         path = pathlist[i]
+        print(f"{i+1}/{len(pathlist)}: {path}")
         import_status = True
         try:
-            spec = importlib.util.spec_from_file_location("sub", path)
-            mod = importlib.util.module_from_spec(spec)
-            spec.loader.exec_module(mod)
+            with suppress_stdout():
+                spec = importlib.util.spec_from_file_location("sub", path)
+                mod = importlib.util.module_from_spec(spec)
+                spec.loader.exec_module(mod)
         except Exception:
             import_status = False
         func_feedback = get_student_info(mod, str(path))
@@ -96,7 +111,7 @@ if __name__ == "__main__":
                             correct = "Correct"
                             if type_check is False:
                                 correct = "Incorrect"
-                                message = "Incorrect return type. "
+                                message = f"Incorrect return type. {type(result)} "
                                 if message not in feedback:
                                     feedback += message
                             elif type(expected) == float:
@@ -104,13 +119,13 @@ if __name__ == "__main__":
                                     correct = "Correct"
                                 elif expected != result:
                                     correct = "Incorrect"
-                                    message = f"Incorrect result. "
-                                    if message not in feedback:
+                                    message = f"Incorrect result. Params: {params}; Expected: {expected}; Result: {result} "
+                                    if "Incorrect result." not in feedback:
                                         feedback += message
                             elif expected != result:
                                 correct = "Incorrect"
-                                message = f"Incorrect result. "
-                                if message not in feedback:
+                                message = f"Incorrect result. Params: {params}; Expected: {expected}; Result: {result} "
+                                if "Incorrect result." not in feedback:
                                     feedback += message
                             if correct == "Correct":
                                 test_results["num_passed"] += 1

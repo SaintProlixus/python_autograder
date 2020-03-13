@@ -33,16 +33,21 @@ def build_param(par, min_val: int, max_val: int):
             full_par.append(build_param(*par))
         return full_par
     elif type(par) == tuple:
-        full_par = tuple()
-        for i in range(randint(min_val, max_val)):
-            full_par += (build_param(*par),)
-        return full_par
+        if par[0] == "choice":
+            return build_param(choice(par[1]), min_val, max_val)
+        else:
+            full_par = tuple()
+            for i in range(randint(min_val, max_val)):
+                full_par += (build_param(*par),)
+            return full_par
 
 
-def test_params(pars: tuple, min_val: int, max_val: int):
+def test_params(pars: tuple, min_val=None, max_val=None):
     output = list()
-    for par in pars:
-        output.append(build_param(par, min_val, max_val))
+    for par in pars.values():
+        par_type = par["type"]
+        min_val, max_val = par["range"]
+        output.append(build_param(par_type, min_val, max_val))
     return tuple(output)
 
 
@@ -61,7 +66,7 @@ def generate_tests(funcs, num):
         test_battery[func]["tests"] = dict()
         for i in range(num):
             test_name = f"test{i}"
-            init_params = test_params(funcs[func]["pars"], *funcs[func]["range"])
+            init_params = test_params(funcs[func]["pars"])
             acc_type = funcs[func]["acc_type"]
             params = list()
             for e in init_params:
