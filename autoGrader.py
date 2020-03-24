@@ -91,14 +91,14 @@ if __name__ == "__main__":
                 if func_call and import_status:
                     feedback = ""
                     for test in tests:
-                        init_params = tests[test]["params"]
-                        params = list()
-                        for e in init_params:
-                            if type(e) == list:
-                                params.append(e[:])
-                            else:
-                                params.append(e)
-                        params = tuple(params)
+                        params = tests[test]["params"]
+                        # params = list()
+                        # for e in init_params:
+                        #     if type(e) == list:
+                        #         params.append(e[:])
+                        #     else:
+                        #         params.append(e)
+                        # params = tuple(params)
                         expected = tests[test]["expected"]
                         acc_type = tests[test]["acc_type"]
                         try:
@@ -107,17 +107,25 @@ if __name__ == "__main__":
                                 type_check = True
                             else:
                                 result = func_call(*params)
-                                type_check = isinstance(result, acc_type)
+                                type_check = type(result) == type(expected)
                             correct = "Correct"
                             if type_check is False:
                                 correct = "Incorrect"
-                                message = f"Incorrect return type. {type(result)} "
-                                if message not in feedback:
+                                message = f"Incorrect return type. {type(result)} | {type(expected)}; Params: {params}; Expected: {expected}; Result: {result} "
+                                if "Incorrect return type." not in feedback:
                                     feedback += message
                             elif type(expected) == float:
                                 if math.isclose(expected, result, abs_tol=0.000001):
                                     correct = "Correct"
                                 elif expected != result:
+                                    correct = "Incorrect"
+                                    message = f"Incorrect result. Params: {params}; Expected: {expected}; Result: {result} "
+                                    if "Incorrect result." not in feedback:
+                                        feedback += message
+                            elif type(expected) == str:
+                                if expected.strip() == result.strip():
+                                    correct = "Correct"
+                                else:
                                     correct = "Incorrect"
                                     message = f"Incorrect result. Params: {params}; Expected: {expected}; Result: {result} "
                                     if "Incorrect result." not in feedback:
@@ -134,7 +142,7 @@ if __name__ == "__main__":
                                 test_results["num_passed"] += 1
                             else:
                                 test_results["num_passed"] = 0
-                                feedback = f"{type(e)}: {str(e)} "
+                                feedback = f"{type(e)}: {str(e)} Params: {params}"
                     if test_results["num_passed"] == test_results["num_tests"]:
                         test_results["correct"] = "Correct"
                         grade = [grade[0]+1, grade[1]]

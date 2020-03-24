@@ -6,7 +6,7 @@ import re
 
 
 def rand_string(length: int):
-    accepted = ascii_letters
+    accepted = ascii_letters + ":?!@#$*)(&^" + " "
     output = ""
     for _ in range(length):
         output += choice(accepted)
@@ -66,15 +66,18 @@ def generate_tests(funcs, num):
         test_battery[func]["tests"] = dict()
         for i in range(num):
             test_name = f"test{i}"
-            init_params = test_params(funcs[func]["pars"])
-            acc_type = funcs[func]["acc_type"]
-            params = list()
-            for e in init_params:
-                if type(e) == list:
-                    params.append(e[:])
-                else:
-                    params.append(e)
-            params = tuple(params)
+            params = tuple()
+            if funcs[func]["include"] is None or i > len(funcs[func]["include"])-1:
+                init_params = test_params(funcs[func]["pars"])
+                acc_type = funcs[func]["acc_type"]
+                for e in init_params:
+                    if type(e) == list:
+                        params += (e[:],)
+                    else:
+                        params += (e,)
+                # params = tuple(params)
+            else:
+                params = funcs[func]["include"][i]
             try:
                 if "print" in acc_type:
                     expected = check_print(funcs[func]["call"], params)
@@ -82,5 +85,5 @@ def generate_tests(funcs, num):
                     expected = funcs[func]["call"](*params)
             except Exception as e:
                 expected = e
-            test_battery[func]["tests"][test_name] = {"params": init_params, "expected": expected, "acc_type": acc_type}
+            test_battery[func]["tests"][test_name] = {"params": params, "expected": expected, "acc_type": acc_type}
     return test_battery
