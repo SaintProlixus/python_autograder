@@ -10,7 +10,7 @@ gitdb2==2.0.6
 GitPython==3.0.5
 jdcal==1.4.1
 mccabe==0.6.1
-numpy==1.18.1
+numpy==1.22.0
 openpyxl==3.0.3
 pandas==0.25.3
 pathspec==0.7.0
